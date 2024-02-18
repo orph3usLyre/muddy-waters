@@ -1,0 +1,8 @@
+
+[workspace]
+resolver = "2"
+members = [
+    "obfuscate-str",
+    "obfuscate-str-proc",
+]
+
