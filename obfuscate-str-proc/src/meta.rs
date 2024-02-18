@@ -35,14 +35,11 @@ impl Parse for NonObfuscatedText {
         if let syn::StaticMutability::Mut(_) = mutability {
             panic!("Expression cannot be mutable");
         }
-
-        let text = if let Expr::Lit(ExprLit {
-            lit: syn::Lit::Str(lit_str),
+        let Expr::Lit(ExprLit {
+            lit: syn::Lit::Str(text),
             ..
         }) = *expr
-        {
-            lit_str
-        } else {
+        else {
             panic!("Expression must be of type &'static str");
         };
 

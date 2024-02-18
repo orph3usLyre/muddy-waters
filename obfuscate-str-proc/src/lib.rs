@@ -1,3 +1,4 @@
+#![warn(clippy::pedantic)]
 #![feature(proc_macro_diagnostic)]
 
 use chacha20poly1305::{
@@ -6,30 +7,26 @@ use chacha20poly1305::{
 };
 use once_cell::sync::Lazy;
 use proc_macro::TokenStream;
-use syn::parse_macro_input;
-use syn::LitStr;
+use syn::{parse_macro_input, LitStr};
 
 mod internal;
-use internal::*;
-
 mod meta;
+
+use internal::*;
 use meta::*;
 
-// use https://docs.rs/chacha20poly1305/latest/chacha20poly1305/
-
 /// Used to generate the key at build time
-/// Kept in a separate static to recover the key and embed it into the binary
+/// Kept seperately to embed in the target binary
 pub(crate) static OBFUSCATION_KEY: Lazy<Key> =
     Lazy::new(|| ChaCha20Poly1305::generate_key(&mut OsRng));
 
-/// Used to generate the key at build time
+/// Used to generate text encryptions at build time
 pub(crate) static ENCRYPTION: Lazy<ChaCha20Poly1305> =
     Lazy::new(|| ChaCha20Poly1305::new(&OBFUSCATION_KEY));
 
 #[proc_macro]
 pub fn obfuscate_init(_input: TokenStream) -> TokenStream {
     let mut output: TokenStream = TokenStream::new();
-    // output.extend(build_obfuscation_imports());
     output.extend(build_obfuscation_mod());
 
     output
@@ -38,21 +35,32 @@ pub fn obfuscate_init(_input: TokenStream) -> TokenStream {
 #[proc_macro]
 pub fn o(input: TokenStream) -> TokenStream {
     let text = parse_macro_input!(input as LitStr).value();
-    encrypt_string_tokens(text)
+    let Ok(out) = encrypt_string_tokens(text) else {
+        panic!("Encountered encryption error");
+    };
+    out
 }
 
 #[proc_macro_attribute]
 pub fn obfuscate_str(_args: TokenStream, input: TokenStream) -> TokenStream {
     let input = parse_macro_input!(input as NonObfuscatedText);
-    let full_output: TokenStream = build_static_obfuscation(input);
-    TokenStream::from(full_output)
+    let span = input.text.span().clone();
+    let Ok(out) = build_static_obfuscation(input) else {
+        span.unwrap().error("Encountered encryption error").emit();
+        return TokenStream::new();
+    };
+    out
 }
 
 #[proc_macro]
 pub fn obfuscate_strs(input: TokenStream) -> TokenStream {
     let NonObfuscatedTexts { texts } = parse_macro_input!(input as NonObfuscatedTexts);
     let mut output: TokenStream = TokenStream::new();
-    let iter = texts.into_iter().map(build_static_obfuscation);
+    let Ok(iter): Result<Vec<TokenStream>, chacha20poly1305::Error> =
+        texts.into_iter().map(build_static_obfuscation).collect()
+    else {
+        panic!("Encountered encryption error");
+    };
     output.extend(iter);
     output
 }
