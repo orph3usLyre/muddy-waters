@@ -1,0 +1,23 @@
+
+[workspace]
+resolver = "2"
+members = [
+    "muddy",
+    "muddy_macros",
+]
+
+[workspace.package]
+version = "0.2.0"
+authors = ["orph3uslyre"]
+description = "A rust static string obfuscation library."
+edition = "2021"
+readme = "./README.md"
+license = "MIT OR Apache-2.0"
+keywords = ["obfuscation", "obfuscate", "hide", "strings"]
+categories = ["encoding", "development-tools", "cryptography"]
+repository = "https://github.com/orph3usLyre/muddy-waters"
+
+[workspace.dependencies]
+once_cell = "1.19"
+
+

@@ -1,0 +1,25 @@
+[package]
+name = "muddy_macros"
+description = "Procedural macros for string obfuscation. Should only be used as part of the 'muddy' crate."
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+readme.workspace = true
+license.workspace = true
+keywords.workspace = true
+categories.workspace = true
+repository.workspace = true
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+proc-macro = true
+
+[dependencies]
+quote = "1.0"
+syn = { version = "2.0", features = ["full", "extra-traits"] }
+proc-macro2 = "1.0"
+once_cell = { workspace = true }
+rand = "0.8"
+aes = "0.8"
+chacha20poly1305 = "0.10"
