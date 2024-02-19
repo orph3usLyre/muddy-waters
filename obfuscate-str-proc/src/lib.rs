@@ -7,7 +7,10 @@ use chacha20poly1305::{
 };
 use once_cell::sync::Lazy;
 use proc_macro::TokenStream;
+use quote::quote_spanned;
 use syn::{parse_macro_input, LitStr};
+
+mod error;
 
 mod internal;
 mod meta;
@@ -26,17 +29,21 @@ pub(crate) static ENCRYPTION: Lazy<ChaCha20Poly1305> =
 
 #[proc_macro]
 pub fn obfuscate_init(_input: TokenStream) -> TokenStream {
+    // let obds = Lazy::force(&OBFUSCATION_KEY);
+    // let as_slice = obds.as_slice();
+    let keymode: KeyMode = parse_macro_input!(_input as KeyMode);
     let mut output: TokenStream = TokenStream::new();
-    output.extend(build_obfuscation_mod());
-
+    output.extend(build_obfuscation_mod(keymode));
     output
 }
 
 #[proc_macro]
-pub fn o(input: TokenStream) -> TokenStream {
-    let text = parse_macro_input!(input as LitStr).value();
-    let Ok(out) = encrypt_string_tokens(text) else {
-        panic!("Encountered encryption error");
+pub fn obfuscate(input: TokenStream) -> TokenStream {
+    let text = parse_macro_input!(input as LitStr);
+    let Ok(out) = encrypt_string_tokens(text.value()) else {
+        return quote_spanned!(text.span()=> compiler_error!("Encountered encryption error"))
+            .into();
+        // panic!("Encountered encryption error");
     };
     out
 }
