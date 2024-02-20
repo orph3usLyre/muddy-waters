@@ -119,22 +119,10 @@ pub(crate) fn build_obfuscation_mod(keymode: KeyMode) -> TokenStream {
                 .iter()
                 .map(|byte| format!("{:02X}", byte))
                 .collect::<String>();
-            // .collect::<Vec<_>>();
-            eprintln!("Len: {}, Key: {:?}", key.len(), key);
+            eprintln!("Key: {}", key);
             build_env_cipher_block()
         }
     };
-    // let mut other = [0u8; 32];
-    // OsRng.fill_bytes(&mut other);
-    //
-    // let junk = other;
-    // let key = OBFUSCATION_KEY.as_slice();
-    //
-    // // XOR the key with the random arr
-    // other.iter_mut().zip(key.iter()).for_each(|(b, k)| *b ^= k);
-    //
-    // let cipher_block =
-    //     build_embedded_cipher_block(Literal::byte_string(&other), Literal::byte_string(&junk));
 
     let decrypt_block = quote! {
         pub fn decrypt(encrypted: &[u8], nonce: &[u8]) -> String {
