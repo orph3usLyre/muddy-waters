@@ -115,9 +115,10 @@ fn build_env_cipher_block(
     quote! {
         static #key_ident: Lazy<Key> = Lazy::new(|| {
             let Some(var) = std::env::var_os(#env_ident) else {
-                panic!()
+                panic!("Need to set {} env variable", #env_ident);
             };
             let Ok(bytes) = <[u8; 32]>::from_hex(var.as_encoded_bytes()) else {
+                panic!("Can't get bytes from {} env variable, secret key needs to be a hex string with 64 symbols length.", #env_ident)
             };
 
             Key::clone_from_slice(&bytes)
