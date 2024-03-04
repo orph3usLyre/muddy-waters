@@ -117,8 +117,7 @@ fn build_env_cipher_block(
             let Some(var) = std::env::var_os(#env_ident) else {
                 panic!()
             };
-            let Ok(bytes) = <[u8; 32]>::from_hex(var.as_bytes()) else {
-                panic!()
+            let Ok(bytes) = <[u8; 32]>::from_hex(var.as_encoded_bytes()) else {
             };
 
             Key::clone_from_slice(&bytes)
