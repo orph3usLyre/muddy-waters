@@ -42,7 +42,14 @@ pub(crate) fn build_obfuscation_mod(
                 Some(ref s) => s.as_str(),
                 _ => "MUDDY",
             };
-            eprintln!("{env_name}='{key}'");
+            eprintln!("Please, set {env_name} env variable with content:\n");
+            #[cfg(windows)]
+            // language=cmd
+            eprintln!(r#"set "{env_name}={key}""#);
+            #[cfg(not(windows))]
+            // language=sh
+            eprintln!(r#"{env_name}="{key}""#);
+            eprintln!();
             build_env_cipher_block(key_ident, cipher_ident, env_name)
         }
     };
