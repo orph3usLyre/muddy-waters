@@ -49,7 +49,6 @@ pub(crate) fn build_obfuscation_mod(
             #[cfg(not(windows))]
             // language=sh
             eprintln!(r#"{env_name}="{key}""#);
-            eprintln!();
             build_env_cipher_block(key_ident, cipher_ident, env_name)
         }
     };
