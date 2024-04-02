@@ -1,0 +1,67 @@
+name: rust
+
+on:
+  push:
+    branches:
+      - "main"
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+'
+  pull_request:
+    branches:
+      - "main"
+    paths:
+      - "**.rs"
+      - "**.toml"
+
+  # Allows running this workflow manually from the Actions tab
+  workflow_dispatch:
+
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  fmt:
+    name: Rustfmt
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Run cargo fmt
+        run: cargo fmt --all -- --check
+
+  clippy:
+    name: Clippy
+    needs: [ fmt ]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: dtolnay/rust-toolchain@stable
+      - run: cargo -V && rustc -V
+      - name: Run clippy for native
+        run: cargo clippy --all -- -D warnings
+
+  rustdoc:
+    name: Rustdoc
+    needs: [ fmt ]
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v3
+      - uses: dtolnay/rust-toolchain@stable
+      - name: muddy
+        run: >
+          cargo rustdoc -p muddy --all-features -- -D warnings
+  tests:
+    name: Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v3
+      - uses: dtolnay/rust-toolchain@stable
+      - name: run tests
+        run: cargo test

@@ -1,0 +1,19 @@
+name: pull request 
+
+on:
+  pull_request:
+    branches:
+      - "main"
+
+  # Allows running this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  changelog:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Enforce changelog
+        uses: dangoslen/changelog-enforcer@v3
+        with:
+          missingUpdateErrorMessage: Please add an entry to the CHANGELOG documenting your changes
