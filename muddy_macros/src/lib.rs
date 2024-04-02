@@ -69,7 +69,7 @@ pub(crate) type Result<T> = std::result::Result<T, chacha20poly1305::Error>;
 ///
 /// ### "embed"
 /// If the "embed" mode is chosen, the key will be embedded in the binary with minor obfuscation
-/// (XORed with a random array).
+/// (`XORed` with a random array).
 ///
 /// ### "env"
 /// If "env" is provided, the key will not be embedded in the binary.
@@ -89,7 +89,7 @@ pub fn muddy_init(input: TokenStream) -> TokenStream {
     let keymode: KeyMode = parse_macro_input!(input as KeyMode);
     let key_ident = Ident::new(&IDENTS.0, Span::call_site());
     let cipher_ident = Ident::new(&IDENTS.1, Span::call_site());
-    TokenStream::from(build_obfuscation_mod(&key_ident, &cipher_ident, keymode))
+    build_obfuscation_mod(&key_ident, &cipher_ident, keymode)
 }
 
 #[proc_macro]
