@@ -57,6 +57,9 @@ static DEFAULT_ENV: &str = "MUDDY";
 
 pub(crate) type Result<T> = std::result::Result<T, chacha20poly1305::Error>;
 
+// NOTE: All doc tests in this crate are marked with `ignore` since the `muddy_macros` cannot work
+// without the `muddy` crate as a wrapper
+
 #[proc_macro]
 /// Initialization macro that must be called at the crate root.
 /// This sets up the scaffolding for the lazy decryption at runtime.
@@ -74,15 +77,21 @@ pub(crate) type Result<T> = std::result::Result<T, chacha20poly1305::Error>;
 /// ### "env"
 /// If "env" is provided, the key will not be embedded in the binary.
 /// An additional value may be provided to set the env key identifier:
-/// ```rust
-/// muddy_init!("env", "MY_KEY")
+///
+/// ```ignore
+///
+/// muddy_init!("env", "MY_KEY");
 /// ```
 ///
 /// Or at buildtime:  
-/// ```rust
-/// muddy_init!("env")
+///
+/// ```ignore
+///
+/// muddy_init!("env");
+///
+/// // run with `MUDDY='MY_KEY_NAME' cargo b`
+///
 /// ```
-/// `MUDDY='MY_KEY_NAME' cargo b`
 ///
 ///
 pub fn muddy_init(input: TokenStream) -> TokenStream {
@@ -98,7 +107,7 @@ pub fn muddy_init(input: TokenStream) -> TokenStream {
 ///
 /// # Example
 ///
-/// ```rust
+/// ```ignore
 /// println!("{}", muddy_str!("my text"));
 /// ```
 ///
@@ -117,7 +126,7 @@ pub fn muddy_str(input: TokenStream) -> TokenStream {
 ///
 /// # Example
 ///
-/// ```rust
+/// ```ignore
 /// println!("{}", m!("my text"));
 /// ```
 ///
@@ -130,7 +139,7 @@ pub fn m(input: TokenStream) -> TokenStream {
 ///
 /// # Example
 ///
-/// ```rust
+/// ```ignore
 /// #[muddy]
 /// static MY_STR: &str = "my text";
 /// ```
@@ -149,10 +158,10 @@ pub fn muddy(_args: TokenStream, input: TokenStream) -> TokenStream {
 ///
 /// # Example
 ///
-/// ```rust
+/// ```ignore
 /// muddy_all! {
-/// pub static MY_FIRST_STR: &str = "my text";
-/// static MY_SECOND_STR: &str = "my second text";
+///     pub static MY_FIRST_STR: &str = "my text";
+///     static MY_SECOND_STR: &str = "my second text";
 /// }
 /// ```
 ///
