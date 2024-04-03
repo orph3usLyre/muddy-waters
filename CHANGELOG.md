@@ -9,6 +9,7 @@
 * bump --all-- CI/CD checkout@v3 to checkout@v4 and set timeout (#12)
 * add strict clippy lints (#13)
 * reduce output text at build time (#15)
+* update README with doctests (#17)
 
 ## 0.2.0
 * Initial published crate version
