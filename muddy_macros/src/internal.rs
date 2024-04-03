@@ -1,4 +1,4 @@
-use crate::{KeyMode, NonObfuscatedText, Result, ENCRYPTION, KEY};
+use crate::{KeyMode, NonObfuscatedText, Result, DEFAULT_ENV, ENCRYPTION, KEY};
 use chacha20poly1305::{
     aead::{Aead, AeadCore, OsRng},
     ChaCha20Poly1305, Nonce,
@@ -38,14 +38,13 @@ pub fn build_obfuscation_mod(
                 let _ = write!(out, "{c:02X}");
                 out
             });
-            let env_name = env.as_ref().map_or("MUDDY", |s| s.as_str());
-            eprintln!("Please, set {env_name} env variable with content:");
+            let env_name = env.as_ref().map_or(DEFAULT_ENV, |s| s.as_str());
             #[cfg(windows)]
             // language=cmd
-            eprintln!(r#"set "{env_name}={key}""#);
+            eprintln!(r#"set {env_name}="{key}""#);
             #[cfg(not(windows))]
             // language=sh
-            eprintln!(r#"{env_name}="{key}""#);
+            eprintln!(r#"{env_name}='{key}'"#);
             build_env_cipher_block(key_ident, cipher_ident, env_name)
         }
     };
