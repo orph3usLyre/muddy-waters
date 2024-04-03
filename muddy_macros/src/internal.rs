@@ -41,7 +41,7 @@ pub fn build_obfuscation_mod(
             let env_name = env.as_ref().map_or(DEFAULT_ENV, |s| s.as_str());
             #[cfg(windows)]
             // language=cmd
-            eprintln!(r#"set {env_name}="{key}""#);
+            eprintln!(r#"set "{env_name}={key}""#);
             #[cfg(not(windows))]
             // language=sh
             eprintln!(r#"{env_name}='{key}'"#);
