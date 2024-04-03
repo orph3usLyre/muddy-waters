@@ -6,7 +6,6 @@
 // Grep the binary for 'obfuscated':
 // $ strings ./target/debug/examples/env_custom | grep obfuscated
 //
-extern crate muddy;
 
 use muddy::{muddy_all, muddy_init};
 
