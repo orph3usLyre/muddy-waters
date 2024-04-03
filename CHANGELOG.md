@@ -10,6 +10,7 @@
 * add strict clippy lints (#13)
 * reduce output text at build time (#15)
 * update README with doctests (#17)
+* CI/CD clippy checks all targets (#18)
 
 ## 0.2.0
 * Initial published crate version
