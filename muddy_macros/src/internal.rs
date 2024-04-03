@@ -11,7 +11,7 @@ use std::fmt::Write;
 
 /// Creates the internal `muddy_internal` mod along with the appropriate imports, cipher, and
 /// decryption function
-pub(crate) fn build_obfuscation_mod(
+pub fn build_obfuscation_mod(
     key_ident: &Ident,
     cipher_ident: &Ident,
     keymode: KeyMode,
@@ -38,10 +38,7 @@ pub(crate) fn build_obfuscation_mod(
                 let _ = write!(out, "{c:02X}");
                 out
             });
-            let env_name = match env {
-                Some(ref s) => s.as_str(),
-                _ => "MUDDY",
-            };
+            let env_name = env.as_ref().map_or("MUDDY", |s| s.as_str());
             eprintln!("Please, set {env_name} env variable with content:");
             #[cfg(windows)]
             // language=cmd
@@ -144,9 +141,7 @@ fn build_env_cipher_block(
 
 /// Recreates the static text as a [`super::Lazy<&'static str>`]
 /// by decrypting the text at first call, and leaking the [String]
-pub(crate) fn build_static_obfuscation(
-    non_obfuscated_text: &NonObfuscatedText,
-) -> Result<TokenStream> {
+pub fn build_static_obfuscation(non_obfuscated_text: &NonObfuscatedText) -> Result<TokenStream> {
     let (encrypted, nonce) = encrypt_string_literals(&non_obfuscated_text.text.value())?;
     let variable_name = &non_obfuscated_text.variable_name;
     let visibility = &non_obfuscated_text.visibility;
@@ -177,7 +172,7 @@ fn encrypt_string_literals(plaintext: &str) -> Result<(Literal, Literal)> {
 }
 
 /// Recreates the static as a function call to decrypt it from the lazy cipher
-pub(crate) fn encrypt_string_tokens(plaintext: &str) -> Result<TokenStream> {
+pub fn encrypt_string_tokens(plaintext: &str) -> Result<TokenStream> {
     encrypt_string_literals(plaintext).map(|(cipher_lit, nonce_lit)| {
         quote! {
             muddy_internal::decrypt(#cipher_lit, #nonce_lit)

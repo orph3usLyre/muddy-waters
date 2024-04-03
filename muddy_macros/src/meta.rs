@@ -8,7 +8,7 @@ use crate::DEFAULT_ENV;
 
 /// Defines whether the key will be embedded in the binary or read at runtime
 #[derive(Default)]
-pub(crate) enum KeyMode {
+pub enum KeyMode {
     #[default]
     Embedded,
     Env(Option<String>),
@@ -64,7 +64,7 @@ impl Parse for NonObfuscatedTexts {
         while let Ok(non_obfuscated_text) = input.parse() {
             texts.push(non_obfuscated_text);
         }
-        Ok(NonObfuscatedTexts { texts })
+        Ok(Self { texts })
     }
 }
 
@@ -94,7 +94,7 @@ impl Parse for NonObfuscatedText {
         };
         let span = input.span();
 
-        Ok(NonObfuscatedText {
+        Ok(Self {
             visibility,
             variable_name,
             text,

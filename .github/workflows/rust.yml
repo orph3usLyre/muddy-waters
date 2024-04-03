@@ -43,7 +43,7 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
       - run: cargo -V && rustc -V
       - name: Run clippy for native
-        run: cargo clippy --all -- -D warnings
+        run: cargo clippy --all --tests --all-features -- -D warnings
 
   rustdoc:
     name: Rustdoc

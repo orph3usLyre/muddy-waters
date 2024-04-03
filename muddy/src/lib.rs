@@ -1,4 +1,11 @@
-#![warn(clippy::pedantic)]
+#![forbid(unsafe_code)]
+#![warn(
+    clippy::all,
+    clippy::pedantic,
+    clippy::nursery,
+    rustdoc::broken_intra_doc_links,
+    missing_docs
+)]
 
 //! # `muddy`
 //!
@@ -150,6 +157,7 @@ mod lazy_str {
     type InternalLazy = &'static str;
 
     #[derive(Debug)]
+    /// A wrapper around a [`Lazy<&'static str>`]
     pub struct LazyStr(Lazy<InternalLazy>);
 
     impl LazyStr {
@@ -165,7 +173,7 @@ mod lazy_str {
         ///
         /// Check the corresponding [`once_cell::sync::Lazy`] for error information
         ///
-        pub fn into_value<F>(this: LazyStr) -> Result<InternalLazy, fn() -> &'static str> {
+        pub fn into_value<F>(this: Self) -> Result<InternalLazy, fn() -> &'static str> {
             let val = this.0;
             once_cell::sync::Lazy::<&'static str>::into_value(val)
         }

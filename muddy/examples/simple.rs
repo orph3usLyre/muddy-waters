@@ -9,5 +9,5 @@ muddy_init!();
 
 fn main() {
     println!("{}", m!("My highly obfuscated text"));
-    println!("{}", "My non obfuscated static str - ripgrep me");
+    println!("My non obfuscated static str - ripgrep me");
 }

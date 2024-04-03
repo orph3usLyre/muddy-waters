@@ -1,4 +1,11 @@
-#![warn(clippy::pedantic)]
+#![forbid(unsafe_code)]
+#![warn(
+    clippy::all,
+    clippy::pedantic,
+    clippy::nursery,
+    rustdoc::broken_intra_doc_links,
+    missing_docs
+)]
 
 //! # `muddy_macro`
 //!
