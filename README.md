@@ -9,16 +9,13 @@ It functions by encrypting texts at buildtime, and decrypting them lazily at run
 ## Usage & Examples
 
 ```rust
-
-extern crate muddy;
 use muddy::{m, muddy_init};
 
 muddy_init!();
 
-fn main() {
-    println!("{}", m!("My highly obfuscated text"));
-    println!("{}", "My non obfuscated static str - ripgrep me");
-}
+println!("{}", m!("My highly obfuscated text"));
+println!("{}", "My non obfuscated static str - ripgrep me");
+
 ```  
     
    
@@ -39,24 +36,39 @@ for decrypting the strings at runtime and should be placed at the `root` of the 
 These macros can be used as an in-place text replacement with `m!("my text")`:
 
 ```rust
+use muddy::{muddy_init, m};
+
+muddy_init!();
+
 println!("{}", m!("my plaintext"));
 ```  
 
 As an annotated `&'static str` with the [`muddy`] attribute:
 
 ```rust
+#[macro_use] extern crate muddy;
+use muddy::{muddy, muddy_init};
+
+muddy_init!();
+
 #[muddy]
 static MY_STR: &str = "my plaintext";
+
 ```
 
 Or as an invocation around multiple annotated `&'static str`s with [`muddy_all`]:
 
 ```rust
+use muddy::{muddy_all, muddy_init};
+
+muddy_init!();
+
 muddy_all! {
    pub static MY_STR: &str = "my plaintext";
    pub static MY_SECOND_STR: &str = "my second plaintext";
    static MY_THIRD_STR: &str = "my module-specific third plaintext";
 }
+
 ```
 
 By default, `muddy` will encrypt the static strings with the [`chacha20poly1305`] implementation,
@@ -64,9 +76,9 @@ and embed the key inside the binary.
 
 To avoid hardcoding the deobfuscation key into your binary, you may use:
 
+// NOTE: this test will fail if run by tests since the key needs to be provided at runtime
 ```rust
 
-extern crate muddy;
 use muddy::{m, muddy_init};
 
 muddy_init!("env");
@@ -78,11 +90,8 @@ muddy_init!("env");
 
 // This key needs to be provided at runtime else the program will panic.  
 // `MUDDY='D47A372C13DEFED74FD3B9B4C741C355F9CB2C23C43F98ADE2C02FD50CA55C3D' ./target/debug/examples/env`
-
-fn main() {
     println!("{}", m!("My highly obfuscated text"));
     println!("{}", "My non obfuscated static str - ripgrep me");
-}
 ```  
 
 
