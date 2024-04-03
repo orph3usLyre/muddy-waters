@@ -53,7 +53,6 @@
 //! As an annotated `&'static str` with the [`muddy`] attribute:
 //!
 //! ```rust
-//! #[macro_use] extern crate muddy;
 //! use muddy::{muddy, muddy_init};
 //!
 //! muddy_init!();
