@@ -75,7 +75,6 @@ and embed the key inside the binary.
 
 To avoid hardcoding the deobfuscation key into your binary, you may use:
 
-// NOTE: this test will fail if run by tests since the key needs to be provided at runtime
 ```rust
 
 use muddy::{m, muddy_init};

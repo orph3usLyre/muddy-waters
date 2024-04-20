@@ -84,8 +84,8 @@
 //!
 //! To avoid hardcoding the deobfuscation key into your binary, you may use:
 //!
-//! // NOTE: this test will fail if run by tests since the key needs to be provided at runtime
 //! ```rust,no_run
+//! # // NOTE: this test will fail if run by tests since the key needs to be provided at runtime
 //!
 //! use muddy::{m, muddy_init};
 //!
