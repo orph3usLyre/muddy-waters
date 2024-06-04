@@ -148,7 +148,7 @@ pub fn build_static_obfuscation(non_obfuscated_text: &NonObfuscatedText) -> Resu
     let output = quote! {
         #visibility static #variable_name: crate::muddy_internal::LazyStr = crate::muddy_internal::LazyStr::new(|| {
             let obfuscated_string: String = crate::muddy_internal::decrypt(#encrypted, #nonce);
-            obfuscated_string.leak()
+            Box::<str>::leak(obfuscated_string.into_boxed_str())
         }
     );};
 
