@@ -72,15 +72,15 @@ pub fn build_obfuscation_mod(
 
 /// Creates the inports for the `muddy_internal` mod
 fn build_obfuscation_imports() -> proc_macro2::TokenStream {
-    #[cfg(unix)]
+    #[cfg(target_family = "unix")]
     let use_os_str_ext = quote! {
         use std::os::unix::ffi::OsStrExt;
     };
-    #[cfg(target_os = "wasi")]
+    #[cfg(target_family = "wasm")]
     let use_os_str_ext = quote! {
         use std::os::wasi::ffi::OsStrExt;
     };
-    #[cfg(windows)]
+    #[cfg(target_family = "windows")]
     let use_os_str_ext = quote! {
         use std::os::windows::ffi::OsStrExt;
     };
