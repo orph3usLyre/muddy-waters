@@ -55,7 +55,6 @@ pub struct NonObfuscatedText {
     pub visibility: Visibility,
     pub variable_name: Ident,
     pub text: LitStr,
-    pub span: Span,
 }
 
 impl Parse for NonObfuscatedTexts {
@@ -92,13 +91,11 @@ impl Parse for NonObfuscatedText {
                 "Expression must be of type &'static str",
             ));
         };
-        let span = input.span();
 
         Ok(Self {
             visibility,
             variable_name,
             text,
-            span,
         })
     }
 }
