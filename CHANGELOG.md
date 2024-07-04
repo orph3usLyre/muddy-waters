@@ -1,6 +1,7 @@
 # Changelog
 
 ## [Unreleased]
+* support multiple target families (#20)
 
 ## 0.2.1
 * add `pull_request.yml` to check for added `CHANGELOG.md` entries on pull requests (#8)
