@@ -1,6 +1,8 @@
 # Changelog
 
 ## [Unreleased]
+
+## 0.2.2
 * support multiple target families (#20)
 
 ## 0.2.1
