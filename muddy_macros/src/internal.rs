@@ -53,7 +53,7 @@ pub fn build_obfuscation_mod(
         pub fn decrypt(encrypted: &[u8], nonce: &[u8]) -> String {
             let nonce = Nonce::from_slice(nonce);
             let plaintext = #cipher_ident.decrypt(nonce, encrypted).unwrap();
-            String::from_utf8(plaintext).unwrap()
+            unsafe { String::from_utf8_unchecked(plaintext) }
         }
     };
     let imports_block = build_obfuscation_imports();
