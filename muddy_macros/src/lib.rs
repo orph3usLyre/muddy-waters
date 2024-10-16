@@ -10,7 +10,7 @@
 //! # `muddy_macro`
 //!
 //! This crate provides macros that are reexported by the [muddy](https://github.com/orph3usLyre/muddy-waters/tree/main/muddy) crate and should **not** be used
-//! outside of the context of that crate.
+//! outside the context of that crate.
 //!
 //!
 
@@ -33,9 +33,9 @@ mod meta;
 use internal::{build_obfuscation_mod, build_static_obfuscation, encrypt_string_tokens};
 use meta::{KeyMode, NonObfuscatedText, NonObfuscatedTexts};
 
-/// Used to generate the key at buildtime
+/// Used to generate the key at build time
 ///
-/// Kept seperately to embed in the target binary
+/// Kept separately to embed in the target binary
 pub(crate) static KEY: Lazy<Key> = Lazy::new(|| ChaCha20Poly1305::generate_key(&mut OsRng));
 
 /// Used to generate text encryptions at build time
@@ -90,7 +90,7 @@ pub(crate) type Result<T> = std::result::Result<T, chacha20poly1305::Error>;
 /// muddy_init!("env", "MY_KEY");
 /// ```
 ///
-/// Or at buildtime:  
+/// Or at build time:
 ///
 /// ```ignore
 ///
