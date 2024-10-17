@@ -10,7 +10,7 @@
 //! # `muddy`
 //!
 //! `muddy` is a static string obfuscation library, designed to provide an easy way of avoiding simple static binary analysis tools such as `strings` or YARA rules.
-//! It functions by encrypting texts at buildtime, and decrypting them lazily at runtime.
+//! It functions by encrypting texts at build time, and decrypting them lazily at runtime.
 //!
 //!
 //! ## Usage & Examples
@@ -107,7 +107,7 @@
 //!
 //! If `muddy_init!("env")` is set, the `MUDDY` (by default) env variable will be checked at runtime for the key and the program will panic if it's not found.
 //!
-//! You can also set your own env key identifier at buildtime through `MUDDY`:   
+//! You can also set your own env key identifier at build time through `MUDDY`:
 //! This: `MUDDY='MY_KEY_NAME_2' cargo b --example env`  
 //! prints: `MY_KEY_NAME_2='FD5B85045B5278F5EDA567AD7C58EB56934BD8D7432C878B1AB6090052A64080'`  
 //!   
@@ -174,7 +174,7 @@ mod lazy_str {
         ///
         pub fn into_value<F>(this: Self) -> Result<InternalLazy, fn() -> &'static str> {
             let val = this.0;
-            once_cell::sync::Lazy::<&'static str>::into_value(val)
+            Lazy::<&'static str>::into_value(val)
         }
     }
 

@@ -37,7 +37,7 @@ impl Parse for KeyMode {
                 |var| Self::Env(Some(var.value())),
             ),
             _ => {
-                return Err(syn::Error::new(
+                return Err(Error::new(
                     Span::call_site(),
                     "Must be one of 'embed', 'env'",
                 ))

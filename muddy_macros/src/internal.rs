@@ -70,7 +70,7 @@ pub fn build_obfuscation_mod(
     TokenStream::from(output)
 }
 
-/// Creates the inports for the `muddy_internal` mod
+/// Creates the imports for the `muddy_internal` mod
 fn build_obfuscation_imports() -> proc_macro2::TokenStream {
     quote! {
         use muddy::{GenericArray, KeyInit, Lazy, ChaCha20Poly1305, Key, Aead, U32, Nonce};
