@@ -8,4 +8,6 @@ fn main() {
     println!("cargo:rustc-env=TARGET_FAMILY={}", target_family);
     let target = env::var("TARGET").expect("TARGET is not set");
     println!("cargo:rustc-env=TARGET={}", target);
+
+    println!("cargo:rerun-if-env-changed=MUDDY");
 }
