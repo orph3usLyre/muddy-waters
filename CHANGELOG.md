@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+* use `from_utf8_unchecked` when constructing a string (#23)
+* always inline the decryption function (#23)
+
 ## 0.2.2
 * support multiple target families (#20)
 

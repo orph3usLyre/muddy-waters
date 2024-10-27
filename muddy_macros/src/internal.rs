@@ -50,10 +50,12 @@ pub fn build_obfuscation_mod(
     };
 
     let decrypt_block = quote! {
-        pub fn decrypt(encrypted: &[u8], nonce: &[u8]) -> String {
+        /// Safety: The decrypted text should be valid UTF-8.
+        #[inline(always)]
+        pub unsafe fn decrypt(encrypted: &[u8], nonce: &[u8]) -> String {
             let nonce = Nonce::from_slice(nonce);
             let plaintext = #cipher_ident.decrypt(nonce, encrypted).unwrap();
-            String::from_utf8(plaintext).unwrap()
+            unsafe { String::from_utf8_unchecked(plaintext) }
         }
     };
     let imports_block = build_obfuscation_imports();
@@ -140,7 +142,8 @@ pub fn build_static_obfuscation(non_obfuscated_text: &NonObfuscatedText) -> Resu
 
     let output = quote! {
         #visibility static #variable_name: crate::muddy_internal::LazyStr = crate::muddy_internal::LazyStr::new(|| {
-            let obfuscated_string: String = crate::muddy_internal::decrypt(#encrypted, #nonce);
+            // Safety: `non_obfuscated_text` only contains valid UTF-8.
+            let obfuscated_string: String = unsafe { crate::muddy_internal::decrypt(#encrypted, #nonce) };
             Box::<str>::leak(obfuscated_string.into_boxed_str())
         }
     );};
@@ -167,7 +170,8 @@ fn encrypt_string_literals(plaintext: &str) -> Result<(Literal, Literal)> {
 pub fn encrypt_string_tokens(plaintext: &str) -> Result<TokenStream> {
     encrypt_string_literals(plaintext).map(|(cipher_lit, nonce_lit)| {
         quote! {
-            muddy_internal::decrypt(#cipher_lit, #nonce_lit)
+            // Safety: `plaintext` only contains valid UTF-8.
+            unsafe { muddy_internal::decrypt(#cipher_lit, #nonce_lit) }
         }
         .into()
     })
