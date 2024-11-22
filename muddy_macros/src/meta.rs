@@ -88,7 +88,7 @@ impl Parse for NonObfuscatedText {
         else {
             return Err(Error::new(
                 Span::call_site(),
-                "Expression must be of type &'static str",
+                "Expression must be of type string literal",
             ));
         };
 
