@@ -36,7 +36,17 @@ use meta::{KeyMode, NonObfuscatedText, NonObfuscatedTexts};
 /// Used to generate the key at build time
 ///
 /// Kept separately to embed in the target binary
-pub(crate) static KEY: Lazy<Key> = Lazy::new(|| ChaCha20Poly1305::generate_key(&mut OsRng));
+pub(crate) static KEY: Lazy<Key> = Lazy::new(|| {
+    use const_hex::FromHex;
+    if let Some(muddy_key) = std::env::var_os("MUDDY_KEY") {
+        let Ok(bytes) = <[u8; 32]>::from_hex(muddy_key.as_encoded_bytes()) else {
+            panic!("Can't get bytes from 'MUDDY_KEY' env variable, secret key needs to be a hex string with 64 symbols length.");
+        };
+        Key::clone_from_slice(&bytes)
+    } else {
+        ChaCha20Poly1305::generate_key(&mut OsRng)
+    }
+});
 
 /// Used to generate text encryptions at build time
 pub(crate) static ENCRYPTION: Lazy<ChaCha20Poly1305> = Lazy::new(|| ChaCha20Poly1305::new(&KEY));
