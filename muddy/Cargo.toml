@@ -11,7 +11,7 @@ categories.workspace = true
 repository.workspace = true
 
 [dependencies]
-muddy_macros = { path = "../muddy_macros", version = "0.2"}
+muddy_macros = { path = "../muddy_macros", version = "0.2" }
 once_cell = { workspace = true }
 chacha20poly1305 = "0.10"
-const-hex = "1.11"
+const-hex = { workspace = true }

@@ -16,3 +16,4 @@ repository = "https://github.com/orph3usLyre/muddy-waters"
 
 [workspace.dependencies]
 once_cell = "1.19"
+const-hex = "1.14"
