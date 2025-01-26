@@ -143,6 +143,16 @@ releases.
 
 <!-- cargo-rdme end -->
 
+### Migrating from previous versions
+
+Previous versions of this crate provided obfuscation for static strings. This behavior may be achieved with the current API by using a [`once_cell::Lazy`](https://docs.rs/once_cell/latest/once_cell/sync/struct.Lazy.html):
+```
+use once_cell::sync::Lazy;
+use muddy::muddy_unchecked;
+
+static MY_STRING: Lazy<&'static str> = Lazy::new(|| muddy_unchecked!("some text"));
+```
+
 ### Next steps:
 - [ ]  check proc macro testing suites
 
