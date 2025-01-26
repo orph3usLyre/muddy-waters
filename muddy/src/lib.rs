@@ -72,7 +72,7 @@
 //! Opt for `muddy_unchecked!()` if you can uphold this guarantee.
 //!
 //! ```should_panic
-//! use muddy::muddy_unchecked;
+//! use muddy::{muddy, muddy_unchecked};
 //!
 //! fn f() -> &'static str {
 //!   muddy!(env, "supersecret1")

@@ -281,7 +281,7 @@ impl quote::ToTokens for InPlaceDecrypter {
 ///
 /// # Example
 ///
-/// ```
+/// ```ignore
 /// fn f() -> &'static str {
 ///   muddy!("supersecret1")
 /// }
@@ -321,7 +321,7 @@ pub fn muddy(input: TokenStream) -> TokenStream {
 ///
 /// # Example
 ///
-/// ```
+/// ```ignore
 /// fn f() -> &'static str {
 ///   muddy_unchecked!("supersecret1")
 /// }
