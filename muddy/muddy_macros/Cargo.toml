@@ -19,8 +19,8 @@ proc-macro = true
 quote = "1.0"
 syn = { version = "2.0", features = ["full", "extra-traits"] }
 proc-macro2 = "1.0"
-once_cell = { workspace = true }
-rand = "0.8"
-aes = "0.8"
 chacha20poly1305 = "0.10"
-const-hex = { workspace = true }
+rand = { version = "0.8.5" }
+
+[features]
+env = []
