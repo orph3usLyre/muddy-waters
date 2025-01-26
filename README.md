@@ -1,21 +1,21 @@
 <!-- cargo-rdme start -->
 
-# `muddy`
+# muddy
 
-`muddy` is a static string obfuscation library, designed to provide an easy way of avoiding simple static binary analysis tools such as `strings` or YARA rules.
-It functions by encrypting texts at buildtime, and decrypting them lazily at runtime.
+muddy is a literal string obfuscation library, designed to provide an easy way of avoiding simple static binary analysis tools such as `strings` or YARA rules.
+It functions by encrypting texts at build time, and embedding an in-place decrypter that is evaluated at runtime.
 
 
 ## Usage & Examples
 
 ```rust
-use muddy::{m, muddy_init};
+// examples/simple.rs
+use muddy::muddy;
 
-muddy_init!();
-
-println!("{}", m!("My highly obfuscated text"));
-println!("{}", "My non obfuscated static str - ripgrep me");
-
+let non_obfuscated = "notsupersecret9001";
+let obfuscated = muddy!("supersecret42");
+println!("{}", non_obfuscated);
+println!("{}", obfuscated);
 ```  
     
    
@@ -27,88 +27,88 @@ println!("{}", "My non obfuscated static str - ripgrep me");
 > Only the second nonobfuscated line should appear.
 >  
   
-   
   
-`muddy` primarily provides the exported `m!()`, `#[muddy]`, and `muddy_all! { }` macros, all which
-take text as input and encrypt it. The `muddy_init!()` macro provides the scaffolding
-for decrypting the strings at runtime and should be placed at the `root` of the user's crate.
+`muddy` primarily provides the exported `muddy!()` and `muddy_unchecked!()`, macros, which
+each take a literal text as input, encrypt it at buildtime, and generate
+an in-place decrypter which is evaluated to the plaintext `&'static str` at runtime.
 
-These macros can be used as an in-place text replacement with `m!("my text")`:
 
-```rust
-use muddy::{muddy_init, m};
-
-muddy_init!();
-
-println!("{}", m!("my plaintext"));
-```  
-
-As an annotated `&'static str` with the [`muddy`] attribute:
-
-```rust
-use muddy::{muddy, muddy_init};
-
-muddy_init!();
-
-#[muddy]
-static MY_STR: &str = "my plaintext";
-
-```
-
-Or as an invocation around multiple annotated `&'static str`s with [`muddy_all`]:
-
-```rust
-use muddy::{muddy_all, muddy_init};
-
-muddy_init!();
-
-muddy_all! {
-   pub static MY_STR: &str = "my plaintext";
-   pub static MY_SECOND_STR: &str = "my second plaintext";
-   static MY_THIRD_STR: &str = "my module-specific third plaintext";
-}
-
-```
-
-By default, `muddy` will encrypt the static strings with the [`chacha20poly1305`] implementation,
+By default, these macros will encrypt literal strings with the [`chacha20poly1305`] implementation
 and embed the key inside the binary.  
 
-To avoid hardcoding the deobfuscation key into your binary, you may use:
+#### Runtime-provided decryption
+
+If the env argument is provided to the macro invocation, the deobfuscation key
+will not be embedded into the binary. Instead, it will be generated at buildtime
+and must be provided at runtime.
 
 ```rust
+use muddy::muddy;
 
-use muddy::{m, muddy_init};
-
-muddy_init!("env");
-
-// If you build your program with `muddy_init!("env")`,
-// the deobfuscation key env variable and deobfuscation key
-// will be printed out to stderr:  
-// `MUDDY='D47A372C13DEFED74FD3B9B4C741C355F9CB2C23C43F98ADE2C02FD50CA55C3D'`
-
-// This key needs to be provided at runtime else the program will panic.  
-// `MUDDY='D47A372C13DEFED74FD3B9B4C741C355F9CB2C23C43F98ADE2C02FD50CA55C3D' ./target/debug/examples/env`
-    println!("{}", m!("My highly obfuscated text"));
-    println!("{}", "My non obfuscated static str - ripgrep me");
+let obfuscated = muddy!(env, "supersecret42");
+println!("{}", obfuscated);
 ```  
 
 
-If `muddy_init!("env")` is set, the `MUDDY` (by default) env variable will be checked at runtime for the key and the program will panic if it's not found.
+Running `cargo b` will print out `MUDDY='<SOME_KEY>'` to stderr.
+                                                                                             
+This env will then need to be set at runtime, otherwise the program will panic: `MUDDY='<SOME_KEY>' cargo r`
 
-You can also set your own env key identifier at buildtime through `MUDDY`:   
-This: `MUDDY='MY_KEY_NAME_2' cargo b --example env`  
-prints: `MY_KEY_NAME_2='FD5B85045B5278F5EDA567AD7C58EB56934BD8D7432C878B1AB6090052A64080'`  
-  
+> You may also set your own key identifiers: `muddy!(env = "MY_KEY_NAME", "supersecret42")`
+>
 
-### `muddy_init!`
+### `muddy_unchecked!()`
 
-`muddy_init!()` can take one of two values:
-- `muddy_init!("embed")`
-- `muddy_init!("env")`
+The difference between `muddy!()` and `muddy_unchecked!()` is that the `muddy!()` macro
+checks that the macro invocation is not evaluated multiple times.
+Opt for `muddy_unchecked!()` if you can uphold this guarantee.
 
-If no value is provided, the macro defaults to the `"embed"` configuration.  
-If `"env"` is provided, you may also set the env key identifier as the second field: `muddy_init!("env", "MY_KEY")`
+```rust
+use muddy::muddy_unchecked;
 
+fn f() -> &'static str {
+  muddy!(env, "supersecret1")
+}
+
+fn f2() -> &'static str {
+  muddy_unchecked!(env, "supersecret42")
+}
+
+fn f3() -> &'static str {
+  muddy_unchecked!(env, "supersecret9001")
+}
+
+for _ in 0..2 {
+  println!("{}", f()); // <----- fine, since `muddy!()` provides checks against multiple evaluations
+}
+
+for _ in 0..2 {
+  println!("{}", f2()); // <---- panics at the second evaluation
+}
+
+for _ in 0..2 {
+  std::thread::spawn(|| {
+    println!("{}", f3()); // <-  panics at the second evaluation
+  });
+}
+```
+
+Alternatively:
+```rust
+use muddy::muddy_unchecked;
+
+// only evaluated once
+let plaintext = muddy_unchecked!("supersecret1337");
+for _ in 0..2 {
+  println!("{}", plaintext); // <--- fine
+}
+
+for _ in 0..2 {
+  std::thread::spawn(move || {
+    println!("{}", plaintext); // <- also fine
+  });
+}
+```  
 
 
 ### Note on obfuscation and encryption
@@ -132,15 +132,28 @@ and more can be found in the [cargo reference](https://doc.rust-lang.org/cargo/r
 
 To check what this macro expands to:
 - install [cargo expand](https://github.com/dtolnay/cargo-expand)
-- run: `cargo expand -p muddy --example env`
+- run: `cargo expand -p muddy --example simple`
 
+
+#### Unstable API
+
+This crate is still very much a work-in-progress. Expect breaking changes between minor
+releases.
 
 
 <!-- cargo-rdme end -->
 
+### Migrating from previous versions
+
+Previous versions of this crate provided obfuscation for static strings. This behavior may be achieved with the current API by using a [`once_cell::Lazy`](https://docs.rs/once_cell/latest/once_cell/sync/struct.Lazy.html):
+```
+use once_cell::sync::Lazy;
+use muddy::muddy_unchecked;
+
+static MY_STRING: Lazy<&'static str> = Lazy::new(|| muddy_unchecked!("some text"));
+```
+
 ### Next steps:
-- [ ]  handle `#![no_std]` environments
-- [ ]  check safety with leaking `mut` statics
 - [ ]  check proc macro testing suites
 
 ### Disclaimer

@@ -1,25 +1,14 @@
-// Compile this example
-// At buildtime, a key will be printed to the terminal
-// This key must be set at runtime to deobfuscate the strings or the program will panic
-// MUDDY='2819EC204DFD150583BAE69CA99F679F4F6CADC87724B899FC160AF70E67679C' ./target/debug/example/simple
+use muddy::muddy;
+
+// running `cargo b --example env`
+// will print out `MY_ENV='DF5C842962F76A25B7402524FC8B5C68174584BEC2B6318BBAC5EB1B83767CF0'`
+// to the console
 //
-// Grep the binary for 'obfuscated':
-// $ strings ./target/debug/examples/simple | grep obfuscated
+// This key will then need to be provided at runtime, otherwise the program will panic:
+// `MY_ENV='DF5C842962F76A25B7402524FC8B5C68174584BEC2B6318BBAC5EB1B83767CF0' cargo r --example
+// env`
 //
-
-use muddy::{muddy_all, muddy_init};
-
-muddy_init!("env");
-
-static MY_NON_OBFUSCATED_TEXT: &str = "My non obfuscated static str - ripgrep 'obfuscated'";
-
-muddy_all! {
-    static MY_FIRST_STR: &str = "My first obfuscated static str";
-    static MY_SECOND_STR: &str = "My second obfuscated static str";
-}
-
 fn main() {
-    println!("{}", MY_FIRST_STR);
-    println!("{}", MY_NON_OBFUSCATED_TEXT);
-    println!("{}", MY_SECOND_STR);
+    let text = muddy!(env = "MY_ENV", "supersecret123");
+    println!("{}", text);
 }
