@@ -1,7 +1,8 @@
 # Changelog
 
 ## [Unreleased]
-* accept 'MUDDY_KEY' env variable at build to allow wrapping by other crates
+* rework muddy internals to use non-allocated deobfuscation
+* remove previous API in favor of `muddy!()` and `muddy_unchecked!()`
 
 ## 0.2.2
 * support multiple target families (#20)
