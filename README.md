@@ -159,6 +159,8 @@ static MY_STRING: Lazy<&'static str> = Lazy::new(|| muddy_unchecked!("some text"
 ### Disclaimer
 This library is developed with the sole intention of providing a tool to challenge and educate cybersecurity professionals. It is not intended for any malicious or unlawful activities. The creators and contributors of this library do not endorse, encourage, or support the use of this tool for any illegal purposes.
 
+### Shoutouts
+- thanks to [@blastrock](https://github.com/blastrock) for his advice on `muddy v0.3.0`
 
 ### Similar/related projects
 - [cryptify](https://github.com/dronavallipranav/rust-obfuscator/tree/main/cryptify)
