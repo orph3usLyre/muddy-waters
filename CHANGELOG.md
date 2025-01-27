@@ -1,6 +1,8 @@
 # Changelog
 
 ## [Unreleased]
+
+## 0.3.0
 * rework muddy internals to use non-allocated deobfuscation
 * remove previous API in favor of `muddy!()` and `muddy_unchecked!()`
 
