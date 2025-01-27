@@ -153,9 +153,7 @@
 #[cfg(feature = "env")]
 extern crate std;
 
-#[cfg(feature = "env")]
 pub use muddy_macros::muddy;
-
 pub use muddy_macros::muddy_unchecked;
 
 // re-exports

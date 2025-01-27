@@ -26,11 +26,13 @@ use rand::{
 };
 
 // frontend (parsing)
+#[cfg(feature = "env")]
 struct MuddyInput {
     text: syn::LitStr,
     env: Option<String>,
 }
 
+#[cfg(feature = "env")]
 impl syn::parse::Parse for MuddyInput {
     fn parse(input: syn::parse::ParseStream) -> Result<Self, syn::Error> {
         let env = if let Ok(env) = input.parse::<proc_macro2::Ident>() {
@@ -91,8 +93,6 @@ fn gen_snake_case(len: usize) -> String {
 #[cfg(not(feature = "env"))]
 impl InPlaceDecrypter {
     fn new(text: &str, checked: bool) -> Self {
-        use std::fmt::Write;
-
         let text_len = text.len();
         let key = ChaCha20Poly1305::generate_key(&mut OsRng);
         let encryption = ChaCha20Poly1305::new(&key);

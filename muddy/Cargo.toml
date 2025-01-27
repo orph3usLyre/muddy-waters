@@ -17,9 +17,15 @@ aead = { version = "0.5.2", default-features = false, features = ["arrayvec"] }
 arrayvec = { version = "0.7.6", default-features = false }
 const-hex = { version = "1.14.0", optional = true, default-features = false }
 
-[target.'cfg(loom)'.dependencies]
-loom = "0.7"
-
 [features]
 default = ["env"]
 env = ["muddy_macros/env", "const-hex/std"]
+
+[[example]]
+name = "simple"
+path = "examples/simple.rs"
+
+[[example]]
+name = "env"
+path = "examples/env.rs"
+required-features = ["env"]
