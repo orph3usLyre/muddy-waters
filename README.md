@@ -1,3 +1,9 @@
+[![CI](https://img.shields.io/github/check-runs/orph3usLyre/muddy-waters/main?style=flat-square&label=CI)](https://github.com/orph3usLyre/muddy-waters/actions/workflows/rust.yml)
+[![Docs.rs](https://img.shields.io/docsrs/muddy?style=flat-square-orange)](https://docs.rs/muddy)
+[![Crates.io](https://img.shields.io/crates/v/muddy?style=flat-square)](https://crates.io/crates/muddy)
+[![Downloads](https://img.shields.io/crates/d/muddy?style=flat-square&color=red)](https://crates.io/crates/muddy)
+[![License](https://img.shields.io/badge/License-Apache_2.0-blue?style=flat-square)](./LICENSE-APACHE)
+[![License](https://img.shields.io/badge/License-MIT-blue?style=flat-square)](./LICENSE-MIT)
 <!-- cargo-rdme start -->
 
 # muddy
