@@ -129,10 +129,10 @@ impl InPlaceDecrypter {
             });
             #[cfg(windows)]
             // language=cmd
-            eprintln!(r"set "{env}={key}"");
+            eprintln!(r#"set "{env}={key}""#);
             #[cfg(not(windows))]
             // language=sh
-            eprintln!(r"{env}='{key}'");
+            eprintln!(r#"{env}={key}"#);
         }
         let nonce = ChaCha20Poly1305::generate_nonce(&mut OsRng);
         let text = encryption.encrypt(&nonce, text.as_bytes()).unwrap();
