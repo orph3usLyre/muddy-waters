@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+## 0.3.2
+* fixes key print output on windows
+
 ## 0.3.1
 * correct feature gate for `muddy!()` macro
 
