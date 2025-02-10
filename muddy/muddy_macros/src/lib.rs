@@ -129,7 +129,7 @@ impl InPlaceDecrypter {
             });
             #[cfg(windows)]
             // language=cmd
-            eprintln!(r"set "{env}={key}"");
+            eprintln!(r#"set "{env}={key}""#);
             #[cfg(not(windows))]
             // language=sh
             eprintln!(r"{env}='{key}'");
