@@ -4,7 +4,7 @@ resolver = "2"
 members = ["muddy"]
 
 [workspace.package]
-version = "0.3.1"
+version = "0.3.2"
 authors = ["orph3uslyre"]
 description = "A rust literal string obfuscation library."
 edition = "2021"
