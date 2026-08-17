@@ -138,38 +138,39 @@ impl InPlaceDecrypter {
         let text_len = text.len();
         let env = muddy_input.env.clone();
         // user specified `env`, either custom or default
-        let key = if let Some(env) = env {
-            let mut map = ENV_KEY_MAP.lock().unwrap();
-            // check if env was already placed in map
-            let (key, printed) = if let Some((key, printed)) = map.get(&env) {
-                // if it was, we return the key and indicate if it was already printed for the user
-                (key.clone(), *printed)
-            } else {
-                // if it wasn't, we create the key and insert it in the map.
-                // We haven't used it yet, so we haven't printed it yet
-                let key = ChaCha20Poly1305::generate_key(&mut OsRng);
-                let printed = false;
-                map.insert(env.clone(), (key, printed));
-                (key, printed)
-            };
-            if !printed {
-                let key = key.as_slice().iter().fold(String::new(), |mut out, c| {
-                    let _ = write!(out, "{c:02X}");
-                    out
-                });
-                #[cfg(windows)]
-                // language=cmd
-                eprintln!(r#"set "{env}={key}""#);
-                #[cfg(not(windows))]
-                // language=sh
-                eprintln!(r"{env}='{key}'");
-                // env is printed
-                map.entry(env).and_modify(|(_, printed)| *printed = true);
-            }
-            key
-        } else {
-            ChaCha20Poly1305::generate_key(&mut OsRng)
-        };
+        let key = env.map_or_else(
+            || ChaCha20Poly1305::generate_key(&mut OsRng),
+            |env| {
+                let mut map = ENV_KEY_MAP.lock().unwrap();
+                // check if env was already placed in map
+                let (key, printed) = if let Some((key, printed)) = map.get(&env) {
+                    // if it was, we return the key and indicate if it was already printed for the user
+                    (*key, *printed)
+                } else {
+                    // if it wasn't, we create the key and insert it in the map.
+                    // We haven't used it yet, so we haven't printed it yet
+                    let key = ChaCha20Poly1305::generate_key(&mut OsRng);
+                    let printed = false;
+                    map.insert(env.clone(), (key, printed));
+                    (key, printed)
+                };
+                if !printed {
+                    let key = key.as_slice().iter().fold(String::new(), |mut out, c| {
+                        let _ = write!(out, "{c:02X}");
+                        out
+                    });
+                    #[cfg(windows)]
+                    // language=cmd
+                    eprintln!(r#"set "{env}={key}""#);
+                    #[cfg(not(windows))]
+                    // language=sh
+                    eprintln!(r"{env}='{key}'");
+                    // env is printed
+                    map.entry(env).and_modify(|(_, printed)| *printed = true);
+                }
+                key
+            },
+        );
         let encryption = ChaCha20Poly1305::new(&key);
         let nonce = ChaCha20Poly1305::generate_nonce(&mut OsRng);
         let text = encryption.encrypt(&nonce, text.as_bytes()).unwrap();
