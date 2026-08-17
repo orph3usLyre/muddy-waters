@@ -13,6 +13,22 @@
 //! outside the context of that crate.
 //!
 
+#[cfg(feature = "env")]
+use std::{
+    collections::HashMap,
+    sync::{LazyLock, Mutex},
+};
+
+#[cfg(feature = "env")]
+type Printed = bool;
+
+#[cfg(feature = "env")]
+static ENV_KEY_MAP: LazyLock<Mutex<HashMap<String, (chacha20poly1305::Key, Printed)>>> =
+    LazyLock::new(|| Mutex::new(HashMap::new()));
+
+#[cfg(feature = "env")]
+const DEFAULT_KEY: &str = "MUDDY";
+
 // TODO: look at https://github.com/dtolnay/proc-macro-workshop
 // for crate organization
 use chacha20poly1305::{
@@ -45,7 +61,7 @@ impl syn::parse::Parse for MuddyInput {
             let env = if input.parse::<syn::Token![=]>().is_ok() {
                 input.parse::<syn::LitStr>()?.value()
             } else {
-                "MUDDY".to_string()
+                DEFAULT_KEY.to_string()
             };
             let _ = input.parse::<syn::Token![,]>()?;
             Some(env)
@@ -120,20 +136,41 @@ impl InPlaceDecrypter {
 
         let text = muddy_input.text.value();
         let text_len = text.len();
-        let key = ChaCha20Poly1305::generate_key(&mut OsRng);
+        let env = muddy_input.env.clone();
+        // user specified `env`, either custom or default
+        let key = if let Some(env) = env {
+            let mut map = ENV_KEY_MAP.lock().unwrap();
+            // check if env was already placed in map
+            let (key, printed) = if let Some((key, printed)) = map.get(&env) {
+                // if it was, we return the key and indicate if it was already printed for the user
+                (key.clone(), *printed)
+            } else {
+                // if it wasn't, we create the key and insert it in the map.
+                // We haven't used it yet, so we haven't printed it yet
+                let key = ChaCha20Poly1305::generate_key(&mut OsRng);
+                let printed = false;
+                map.insert(env.clone(), (key, printed));
+                (key, printed)
+            };
+            if !printed {
+                let key = key.as_slice().iter().fold(String::new(), |mut out, c| {
+                    let _ = write!(out, "{c:02X}");
+                    out
+                });
+                #[cfg(windows)]
+                // language=cmd
+                eprintln!(r#"set "{env}={key}""#);
+                #[cfg(not(windows))]
+                // language=sh
+                eprintln!(r"{env}='{key}'");
+                // env is printed
+                map.entry(env).and_modify(|(_, printed)| *printed = true);
+            }
+            key
+        } else {
+            ChaCha20Poly1305::generate_key(&mut OsRng)
+        };
         let encryption = ChaCha20Poly1305::new(&key);
-        if let Some(env) = &muddy_input.env {
-            let key = key.as_slice().iter().fold(String::new(), |mut out, c| {
-                let _ = write!(out, "{c:02X}");
-                out
-            });
-            #[cfg(windows)]
-            // language=cmd
-            eprintln!(r#"set "{env}={key}""#);
-            #[cfg(not(windows))]
-            // language=sh
-            eprintln!(r"{env}='{key}'");
-        }
         let nonce = ChaCha20Poly1305::generate_nonce(&mut OsRng);
         let text = encryption.encrypt(&nonce, text.as_bytes()).unwrap();
         Self {
