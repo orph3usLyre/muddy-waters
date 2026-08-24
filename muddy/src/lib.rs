@@ -31,7 +31,7 @@
 //! >
 //! > `cargo b --example simple`  
 //! >
-//! > `strings ./target/debug/examples/simple | grep obfuscated`    
+//! > `strings ./target/debug/examples/simple | grep obfuscated`\\
 //! > Only the second nonobfuscated line should appear.
 //! >  
 //!   
