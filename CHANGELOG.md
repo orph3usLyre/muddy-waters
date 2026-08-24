@@ -1,6 +1,8 @@
 # Changelog
 
 ## [Unreleased]
+
+## 0.3.3
 * create build-time env-encryption key map to handle multiple possible env variables. 1 env == 1 key.
 
 ## 0.3.2
